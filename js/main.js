@@ -49,6 +49,28 @@
   renderStatus();
   setInterval(renderStatus, 60 * 1000);
 
+  // ---------- Первый экран: появление текста и выезд мини-меню ----------
+  const hero = $('.hero');
+  const board = $('.board', hero);
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  requestAnimationFrame(() => requestAnimationFrame(() => hero.classList.add('is-ready')));
+
+  let boardTicking = false;
+  function updateBoard() {
+    boardTicking = false;
+    // мини-меню выезжает за первые ~30% высоты экрана прокрутки
+    const range = Math.max(160, window.innerHeight * 0.3);
+    const p = reduceMotion ? 1 : Math.min(1, Math.max(0, window.scrollY / range));
+    const eased = 1 - Math.pow(1 - p, 3); // плавное замедление в конце
+    board.style.setProperty('--bp', eased.toFixed(3));
+    hero.classList.toggle('is-scrolled', window.scrollY > 10);
+  }
+  window.addEventListener('scroll', () => {
+    if (!boardTicking) { boardTicking = true; requestAnimationFrame(updateBoard); }
+  }, { passive: true });
+  window.addEventListener('resize', updateBoard);
+  updateBoard();
+
   // ---------- Шапка и мобильное меню ----------
   const header = $('.header');
   const burger = $('.burger');

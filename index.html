@@ -120,14 +120,15 @@
     <img class="hero__bg" src="img/photo-1-1920.webp" srcset="img/photo-1-900.webp 900w, img/photo-1-1920.webp 1920w" sizes="100vw" alt="" fetchpriority="high">
     <div class="container hero__grid">
       <div class="hero__text">
-        <p class="kicker">Кафе · ресторан · бар — Сызрань</p>
-        <h1 class="hero__title">Город <span>1683</span></h1>
-        <p class="hero__lead">Кафе-ресторан на набережной с видом на башню Сызранского кремля. Мангал, пицца и хачапури, авторские лимонады и живая музыка.</p>
-        <div class="hero__actions">
+        <p class="kicker" data-hero-item style="--i:0">Кафе · ресторан · бар — Сызрань</p>
+        <h1 class="hero__title"><span class="hero__line" data-hero-item style="--i:1">Город</span> <span class="hero__line hero__line--accent" data-hero-item style="--i:2">1683</span></h1>
+        <div class="hero__bar" data-hero-item style="--i:3" aria-hidden="true"></div>
+        <p class="hero__lead" data-hero-item style="--i:4">Кафе-ресторан на набережной с видом на башню Сызранского кремля. Мангал, пицца и хачапури, авторские лимонады и живая музыка.</p>
+        <div class="hero__actions" data-hero-item style="--i:5">
           <button class="btn btn--accent btn--lg js-book" type="button">Забронировать стол</button>
           <a class="btn btn--ghost btn--lg" href="#menu">Смотреть меню</a>
         </div>
-        <ul class="facts">
+        <ul class="facts" data-hero-item style="--i:6">
           <li data-status><span class="dot" aria-hidden="true"></span><span data-open-status>Ежедневно 12:00–00:00</span></li>
           <li><svg class="icon"><use href="#i-pin"/></svg>Ульяновская ул., 2</li>
           <li><svg class="icon"><use href="#i-star"/></svg>4,6 на Яндекс Картах</li>
@@ -147,6 +148,7 @@
         <a class="board__link" href="#menu">Всё меню <svg class="icon"><use href="#i-arrow"/></svg></a>
       </aside>
     </div>
+    <a class="hero__cue" href="#about" aria-label="Листать вниз"><span>Листайте</span><i aria-hidden="true"></i></a>
   </section>
 
   <!-- ============ О НАС ============ -->
