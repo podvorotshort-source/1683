@@ -402,14 +402,14 @@ p { margin: 0; }
 .js .hero .hero__bar { transform: scaleX(0); transform-origin: left; transition-property: transform, opacity; transition-duration: .6s; }
 .js .hero.is-ready .hero__bar { transform: scaleX(1); }
 
-/* мини-меню выезжает справа по мере прокрутки (--bp: 0…1 задаёт скрипт) */
-@media (min-width: 961px) {
-  .js .hero .board {
-    opacity: var(--bp, 0);
-    transform: translateX(calc((1 - var(--bp, 0)) * 115%)) rotate(calc((1 - var(--bp, 0)) * 4deg));
-    will-change: transform, opacity;
-  }
+/* мини-меню один раз выезжает справа вместе с текстом и остаётся на месте */
+.js .hero .board {
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity .8s ease-out, transform .9s cubic-bezier(0, .55, .45, 1);
+  transition-delay: .65s;
 }
+.js .hero.is-ready .board { opacity: 1; transform: none; }
 
 .hero__cue {
   position: absolute;
