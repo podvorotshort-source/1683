@@ -782,6 +782,12 @@
         </div>
       </div>
 
+      <!-- ловушка для спам-ботов: человек это поле не видит и не заполняет -->
+      <div class="visually-hidden" aria-hidden="true">
+        <label for="b-website">Сайт</label>
+        <input id="b-website" name="website" type="text" tabindex="-1" autocomplete="off">
+      </div>
+
       <label class="consent">
         <input type="checkbox" name="consent" required>
         <span>Согласен(на) на обработку персональных данных для бронирования стола</span>
@@ -793,18 +799,22 @@
         <button class="btn btn--accent btn--lg" type="submit"><svg class="icon"><use href="#i-chat"/></svg>Отправить заявку</button>
         <a class="btn btn--ghost btn--lg" href="tel:+79171011683"><svg class="icon"><use href="#i-phone"/></svg>Позвонить</a>
       </div>
-      <p class="booking__note">Заявка откроется в WhatsApp — останется нажать «Отправить». Администратор подтвердит бронь в ответном сообщении.</p>
+      <p class="booking__note" data-mode="telegram">Администратор получит заявку сразу и перезвонит, чтобы подтвердить бронь.</p>
+      <p class="booking__note" data-mode="whatsapp">Заявка откроется в WhatsApp — останется нажать «Отправить». Администратор подтвердит бронь в ответном сообщении.</p>
     </form>
 
     <div class="booking__done" hidden>
       <span class="done-icon"><svg class="icon"><use href="#i-check"/></svg></span>
-      <h3 tabindex="-1">Почти готово!</h3>
-      <p>Мы открыли WhatsApp с текстом заявки. Отправьте сообщение — администратор подтвердит бронь.</p>
+      <h3 tabindex="-1" data-mode="whatsapp">Почти готово!</h3>
+      <h3 tabindex="-1" data-mode="telegram">Заявка отправлена!</h3>
+      <p data-mode="telegram">Администратор перезвонит вам в ближайшее время, чтобы подтвердить бронь.</p>
+      <p data-mode="whatsapp">Мы открыли WhatsApp с текстом заявки. Отправьте сообщение — администратор подтвердит бронь.</p>
       <div class="booking__actions booking__actions--center">
-        <a class="btn btn--accent" id="wa-again" href="#" target="_blank" rel="noopener"><svg class="icon"><use href="#i-chat"/></svg>Открыть WhatsApp ещё раз</a>
+        <a class="btn btn--accent" id="wa-again" data-mode="whatsapp" href="#" target="_blank" rel="noopener"><svg class="icon"><use href="#i-chat"/></svg>Открыть WhatsApp ещё раз</a>
         <button class="btn btn--ghost" type="button" data-close>Готово</button>
       </div>
-      <p class="booking__note">WhatsApp не открылся? Позвоните нам: <a href="tel:+79171011683">+7 (917) 101-16-83</a></p>
+      <p class="booking__note" data-mode="telegram">Срочно или передумали? Позвоните нам: <a href="tel:+79171011683">+7 (917) 101-16-83</a></p>
+      <p class="booking__note" data-mode="whatsapp">WhatsApp не открылся? Позвоните нам: <a href="tel:+79171011683">+7 (917) 101-16-83</a></p>
     </div>
   </div>
 </dialog>

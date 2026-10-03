@@ -1083,6 +1083,8 @@ select.input option { background: #22262b; color: var(--text); }
 .consent.is-invalid { color: #ff8a80; }
 
 .form-error { margin-top: 1rem; padding: .75rem 1rem; border-radius: 10px; background: rgba(239, 83, 80, .12); border: 1px solid rgba(239, 83, 80, .35); color: #ffb4ab; font-size: .93rem; }
+.form-error a { color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.btn:disabled { opacity: .65; cursor: progress; }
 
 .booking__actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
 .booking__actions .btn--accent { flex: 1 1 240px; }

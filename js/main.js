@@ -4,6 +4,9 @@
   // ---------- Настройки ----------
   const CONFIG = {
     whatsapp: '79171011683',   // номер для заявок на бронь (только цифры, с 7)
+    // URL Google Apps Script, который пересылает заявки в Telegram (см. backend/README.md).
+    // Если оставить пустым — заявка будет открываться в WhatsApp.
+    bookingEndpoint: 'https://script.google.com/macros/s/AKfycbzFg_1BstPqr7tLhZO86ImxG-dTmHmKOmfhkfZ2pt0pUb-y-0zxbVK3R_H5JZvjnE37/exec',
     openAt: 12 * 60,           // открытие, минуты от полуночи (12:00)
     closeAt: 24 * 60,          // закрытие (00:00)
     lastBooking: 23 * 60,      // последнее время для брони (23:00)
@@ -245,8 +248,17 @@
   const f = {
     name: $('#b-name'), phone: $('#b-phone'), date: $('#b-date'), time: $('#b-time'),
     guests: $('#b-guests'), occasion: $('#b-occasion'), comment: $('#b-comment'),
-    consent: $('input[name="consent"]', form),
+    consent: $('input[name="consent"]', form), website: $('#b-website'),
   };
+  const submitBtn = $('button[type="submit"]', form);
+  const submitHTML = submitBtn.innerHTML;
+  let openedAt = 0;
+
+  // Показываем тексты под выбранный способ отправки: Telegram-бот или WhatsApp
+  function setMode(mode) {
+    $$('[data-mode]', dialog).forEach((el) => { el.hidden = el.dataset.mode !== mode; });
+  }
+  setMode(CONFIG.bookingEndpoint ? 'telegram' : 'whatsapp');
 
   function fillTimes() {
     const { date, minutes } = venueNow();
@@ -277,6 +289,8 @@
     form.hidden = false;
     done.hidden = true;
     errorBox.hidden = true;
+    setMode(CONFIG.bookingEndpoint ? 'telegram' : 'whatsapp');
+    openedAt = Date.now();
     dialog.showModal();
   }
 
@@ -363,10 +377,7 @@
     return `${pad(d)}.${pad(m)}.${y} (${wd})`;
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-
+  function whatsappUrl() {
     const lines = [
       `Здравствуйте! Хочу забронировать стол в ${CONFIG.venue}.`,
       '',
@@ -379,12 +390,73 @@
     if (f.occasion.value) lines.push(`Повод: ${f.occasion.value}`);
     if (f.comment.value.trim()) lines.push(`Пожелания: ${f.comment.value.trim()}`);
 
-    const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`;
-    waAgain.href = url;
-    window.open(url, '_blank', 'noopener');
+    return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`;
+  }
+
+  function showDone(mode) {
+    setMode(mode);
     form.hidden = true;
     done.hidden = false;
-    $('h3', done).focus?.();
+    $(`h3[data-mode="${mode}"]`, done).focus?.();
+  }
+
+  function sendWhatsapp() {
+    const url = whatsappUrl();
+    waAgain.href = url;
+    window.open(url, '_blank', 'noopener');
+    showDone('whatsapp');
+  }
+
+  async function sendTelegram() {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправляем…';
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch(CONFIG.bookingEndpoint, {
+        method: 'POST',
+        // text/plain — «простой» запрос, Apps Script принимает его без CORS-preflight
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          name: f.name.value.trim(),
+          phone: phoneDigits(f.phone.value),
+          date: f.date.value,
+          time: f.time.value,
+          guests: parseInt(f.guests.value, 10),
+          occasion: f.occasion.value,
+          comment: f.comment.value.trim(),
+          website: f.website.value,
+          elapsedMs: Date.now() - openedAt,
+        }),
+        signal: controller.signal,
+      });
+      const data = await res.json().catch(() => null);
+      if (!data || !data.ok) throw new Error((data && data.error) || '');
+      showDone('telegram');
+    } catch (err) {
+      // Не дошло — предлагаем WhatsApp или звонок, чтобы гость не потерялся
+      const reason = err.name !== 'AbortError' && err.message ? err.message : 'Не удалось отправить заявку.';
+      const wa = document.createElement('a');
+      wa.href = '#';
+      wa.textContent = 'в WhatsApp';
+      wa.addEventListener('click', (ev) => { ev.preventDefault(); sendWhatsapp(); });
+      const tel = document.createElement('a');
+      tel.href = 'tel:+79171011683';
+      tel.textContent = 'позвоните';
+      errorBox.replaceChildren(`${reason} Отправьте заявку `, wa, ' или ', tel, '.');
+      errorBox.hidden = false;
+    } finally {
+      clearTimeout(timer);
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = submitHTML;
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (submitBtn.disabled || !validate()) return;
+    if (CONFIG.bookingEndpoint) sendTelegram();
+    else sendWhatsapp();
   });
 
   dialog.addEventListener('close', () => {
