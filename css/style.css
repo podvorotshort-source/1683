@@ -329,6 +329,14 @@ p { margin: 0; }
     transition: opacity .25s, transform .25s, visibility .25s;
   }
   .nav.is-open { opacity: 1; visibility: visible; transform: none; }
+  /* сплошная подложка на весь экран под открытым меню — страница под ним не видна ни в одном браузере */
+  body.nav-is-open::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: #121417;
+  }
   .nav a {
     font-size: 1.7rem;
     font-weight: 500;

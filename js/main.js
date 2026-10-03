@@ -81,6 +81,7 @@
     nav.classList.toggle('is-open', open);
     header.classList.toggle('nav-open', open);
     document.body.classList.toggle('no-scroll', open);
+    document.body.classList.toggle('nav-is-open', open);
   }
   burger.addEventListener('click', () => setNav(burger.getAttribute('aria-expanded') !== 'true'));
   nav.addEventListener('click', (e) => { if (e.target.closest('a')) setNav(false); });
